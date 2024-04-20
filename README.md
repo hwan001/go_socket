@@ -11,5 +11,6 @@ brew install docker-compose
 ### docker-compose commands
 ```bash
 docker-compose up or docker-compose up --build
-docker-compose down --rmi all -v
+docker-compose down --rmi all -v # docker-compse.yaml 파일 위치에서 실행
 ```
+
