@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+  server:
+    image: golang:1.20
+    container_name: vpn_server
+    volumes:
+      - ./server/server.go:/go/src/app/server.go
+    working_dir: /go/src/app
+    command: go run server.go
+    networks:
+      - vpn_net_1
+    depends_on:
+      - strongswan
+
+  client:
+    image: golang:1.20
+    container_name: vpn_client
+    volumes:
+      - ./client/client.go:/go/src/app/client.go
+    working_dir: /go/src/app
+    command: go run client.go vpn_server tcp4
+    networks:
+      - vpn_net_2
+    depends_on:
+      - strongswan
+      - server
+
+  strongswan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: strongswan
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+    networks:
+      - vpn_net_1
+      - vpn_net_2
+
+
+networks:
+  vpn_net_1:
+    driver: bridge
+  vpn_net_2:
+    driver: bridge
